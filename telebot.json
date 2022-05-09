@@ -1,0 +1,649 @@
+[
+    {
+        "id": "bfc6ed84821284e8",
+        "type": "tab",
+        "label": "Projectv2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "fb6818e50730d0da",
+        "type": "telegram command",
+        "z": "bfc6ed84821284e8",
+        "name": "/new_location",
+        "command": "/new_location",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "bot": "",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 90,
+        "y": 380,
+        "wires": [
+            [
+                "3a7e1131403826e8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "73ef3d5fbc5ab711",
+        "type": "inject",
+        "z": "bfc6ed84821284e8",
+        "name": "empty location JSON",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "a83b13674183e901"
+            ]
+        ]
+    },
+    {
+        "id": "497a3e90587f4b0c",
+        "type": "comment",
+        "z": "bfc6ed84821284e8",
+        "name": "Empty location ",
+        "info": "",
+        "x": 100,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "a83b13674183e901",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "set location to empty",
+        "func": "var data = {  \t\n  \tlocation: []\n }\nglobal.set(\"weather_location\", data)",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "3a7e1131403826e8",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "extract data from string and save it to JSON",
+        "func": "var org_str = msg.payload.content\nvar n = org_str.length\norg_str = org_str.substring(1,n)\nvar str = org_str\nn = str.length\nvar newlocation = {\n    name: \"\",\n    latitude: \"\",\n    longitude: \"\"\n}\nvar str1, str2\nfor (var i = 0; i < n; i++) {\n    str1 = str.substring(0,i)\n    str2 = str1.substr(-1)\n    if (str2 === \" \") {\n        newlocation.name = str.substring(0,i-1)\n        str = str.substring(i,n)\n        break\n    }    \n}\nn = str.length\n\nfor (var j = 0; j < n; j++) {\n    str1 = str.substring(0,j)\n    str2 = str1.substr(-1)  \t\n    if (str2 === \" \") {\n        newlocation.latitude = Number(str.substring(0,j-1))\n        str = str.substring(j,n)\n        break\n    }    \n}\nnewlocation.longitude = Number(str)\nvar data = global.get(\"weather_location\")\nif (data.location === \"\") {\n    data = {\n\t\t\"location\":\n        [{\n    \t    name: newlocation.name,\n            latitude: newlocation.latitude,\n            longitude: newlocation.longitude,\n        }]\n    }\n}\nelse {\n    data.location.push({name: newlocation.name, latitude: newlocation.latitude, longitude: newlocation.longitude})\n}\nglobal.set(\"weather_location\", data)\nvar output = \"Name \" + newlocation.name + \", latitude: \" + newlocation.latitude + \", longitude: \" + newlocation.longitude + \", has been saved.\"\n\nvar payload = {\n    chatId: msg.payload.chatId, \n    type: \"message\",\n    content: output\n}\nmsg.payload = payload \nreturn msg\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 440,
+        "wires": [
+            [
+                "6aded3f22bfeade3",
+                "f3918a2995122782"
+            ]
+        ]
+    },
+    {
+        "id": "6aded3f22bfeade3",
+        "type": "telegram sender",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "bot": "",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 730,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8e90d5f94e6486c5",
+        "type": "comment",
+        "z": "bfc6ed84821284e8",
+        "name": "Add Location ",
+        "info": "",
+        "x": 90,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "72e216e712e458fe",
+        "type": "comment",
+        "z": "bfc6ed84821284e8",
+        "name": "All locations",
+        "info": "",
+        "x": 90,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "9a3b845c69beec69",
+        "type": "telegram command",
+        "z": "bfc6ed84821284e8",
+        "name": "/all_locations",
+        "command": "/all_locations",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "bot": "",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 90,
+        "y": 540,
+        "wires": [
+            [
+                "c5980e801ad2383b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "c5980e801ad2383b",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "read the data from JSON",
+        "func": "var output = \"\"\nvar data = global.get(\"weather_location\")\nif (data.location.length > 0) {\n    for (var i = 0; i < data.location.length; i++) {\n        output = output + \"<b><i>Location \" + (i+1) + \":</i></b>\\n\"\n        output = output + \"name: \" + data.location[i].name + \"\\n\"\n        output = output + \"latitude: \" + data.location[i].latitude + \"\\n\"\n        output = output + \"longitude: \" + data.location[i].longitude + \"\\n\\n\"\n    }\n}\nelse {\n    output = \"Unable to find any saved location!\\n\"\n    output = output + \"Type /new_location name latitude longitude to add a new location.\\n\"\n    output = output + \"Example, /new_location home 26.78601 100.45542\"\n}\n\n//define a payload that for telegram\nvar payload = {\n    chatId: msg.payload.chatId,\n    type: \"message\",\n    content: output,\n    options: {parse_mode: \"HTML\"}\n}\nmsg.payload = payload \nreturn msg\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 600,
+        "wires": [
+            [
+                "60c8161e497f0430",
+                "42ebfbc276dcce4f"
+            ]
+        ]
+    },
+    {
+        "id": "60c8161e497f0430",
+        "type": "telegram sender",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "bot": "",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 610,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f51e77aadded1e01",
+        "type": "comment",
+        "z": "bfc6ed84821284e8",
+        "name": "Weather ",
+        "info": "",
+        "x": 80,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "05260b987093cf2a",
+        "type": "telegram command",
+        "z": "bfc6ed84821284e8",
+        "name": "/location_weather",
+        "command": "/location_weather",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "bot": "",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 100,
+        "y": 720,
+        "wires": [
+            [
+                "3e19847839273043"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "73da59b01a577b31",
+        "type": "telegram sender",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "bot": "",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 950,
+        "y": 880,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3e19847839273043",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "get location",
+        "func": "var org_str = msg.payload.content\nvar n = org_str.length\nvar wanted_name = (org_str.substring(1,n)).toLowerCase()\nvar output = \"\"\nvar data = global.get(\"weather_location\")\nvar location = {\n    name: \"\",\n    latitude: \"\",\n    longitude:\"\"\n}\nvar winner = -1\nif (data.location.length > 0) {\n    for (var i = 0; i < data.location.length; i++) {\n        if (wanted_name === (data.location[i].name).toLowerCase()) {\n            \n            location = data.location[i]\n            winner = i\n            break\n        }\n    }\n}\nif ((data.location.length === 0) || (winner === -1)) {\n    output = \"Unable to find \"  + wanted_name + \" in saved location.\\n\"\n    output = output + \"Type /new_location name  \" + wanted_name + \" latitude longitude to add a new location.\\n\"\n    output = output + \"Example, /new_location \" + wanted_name + \" 30.0561 111.33481\"\n}\nvar msg1 = {\n    payload: {\n        chatId: msg.payload.chatId, \n        type: \"message\", \n        content: output, \n        winner: winner, \n        location: location,\n        \n    }\n}\nreturn [msg1]",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 780,
+        "wires": [
+            [
+                "d5f6e4e3b264b374"
+            ]
+        ]
+    },
+    {
+        "id": "d5f6e4e3b264b374",
+        "type": "switch",
+        "z": "bfc6ed84821284e8",
+        "name": "saved location",
+        "property": "payload.location.name",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 520,
+        "y": 840,
+        "wires": [
+            [
+                "73da59b01a577b31"
+            ],
+            [
+                "1477ac5548cd388b"
+            ]
+        ]
+    },
+    {
+        "id": "1477ac5548cd388b",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": " https API",
+        "func": "var wanted_location = {\n    chatId: msg.payload.chatId,\n    name: msg.payload.location.name,\n    latitude: msg.payload.location.latitude,\n    longitude: msg.payload.location.longitude\n}\nglobal.set(\"wanted_location\", wanted_location)\nvar url = \"https://api.openweathermap.org/data/2.5/onecall?appid={yourtoken}=metric\" \nurl = url + \"&lat=\" + msg.payload.location.latitude + \"&lon=\" + msg.payload.location.longitude\nvar msg1 = {\n    url: url\n}\nreturn msg1",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 900,
+        "wires": [
+            [
+                "f649e132418bf84d"
+            ]
+        ]
+    },
+    {
+        "id": "f649e132418bf84d",
+        "type": "http request",
+        "z": "bfc6ed84821284e8",
+        "name": "https API",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "credentials": {
+            "user": "",
+            "password": ""
+        },
+        "x": 540,
+        "y": 900,
+        "wires": [
+            [
+                "ff3ec1c3931c9adf"
+            ]
+        ]
+    },
+    {
+        "id": "ff3ec1c3931c9adf",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "Weather data to report",
+        "func": "\nvar wanted_location = global.get(\"wanted_location\")\nvar output1 =  \"Currently at \" + wanted_location.name + \", weather description is \" +  \n    msg.payload.current.weather[0].description + \".\"\n//https://openweathermap.org/weather-conditions\nvar icon1 = \"http://openweathermap.org/img/wn/\" + msg.payload.current.weather[0].icon + \"@2x.png\"\nvar current_dt = msg.payload.current.dt\nvar forecast_dt, diff\nvar w = -1\nfor (var j = 0; j < 48; j++) {\n     forecast_dt = msg.payload.hourly[j].dt\n     diff = (forecast_dt - current_dt)/(60*60)\n     if (diff >= 1) {\n         w = j \n         break \n    }\n}\nvar output2\nif (w === -1) {\n    output2 =  \"Unable to obtain 1 hour ahead weather forecast.\"\n}\nelse {\n    output2 = \"An hour from now weather description is \" + \n        msg.payload.hourly[w].weather[0].description + \".\"\n    //https://openweathermap.org/weather-conditions\n    icon2 = \"http://openweathermap.org/img/wn/\" + msg.payload.hourly[w].weather[0].icon + \"@2x.png\" \n}\nvar msg1 = {\n    payload: {\n        chatId: wanted_location.chatId,\n        type: \"photo\",\n        content: icon1,\n        caption: output1\n    }\n}\nvar msg2 = {\n    payload: {\n        chatId: wanted_location.chatId,\n        type: \"photo\",\n        content: icon2,\n        caption: output2\n    }\n}\nmsg.payload.content = content;\nreturn [msg1, msg2]\nreturn content\n\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 960,
+        "wires": [
+            [
+                "3bf3547f15e5c2b6"
+            ],
+            [
+                "a00e23beacd25b76"
+            ]
+        ]
+    },
+    {
+        "id": "3bf3547f15e5c2b6",
+        "type": "telegram sender",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "bot": "",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 670,
+        "y": 1020,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a00e23beacd25b76",
+        "type": "delay",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 280,
+        "y": 1020,
+        "wires": [
+            [
+                "3bf3547f15e5c2b6"
+            ]
+        ]
+    },
+    {
+        "id": "8670f63fa194d75c",
+        "type": "telegram command",
+        "z": "bfc6ed84821284e8",
+        "name": "Image",
+        "command": "/photo",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "bot": "",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 70,
+        "y": 1120,
+        "wires": [
+            [
+                "a34b6125f2faef6a"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "a34b6125f2faef6a",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "func": "\nvar n = msg.payload.content.length \nvar topic = msg.payload.content.substring(1,n)\nvar caption \nif (topic === \"\") {\n    topic = \"random\"\n    caption = \"Hi, here's a random image!\\n\"\n    caption = caption + \"Define a topic for your request, such as: /photo Earth\"\n}\nelse {\n    caption = \"Hi, this is an image of '\" + topic + \"'.\"\n}\n//unsplash API \nvar url = \"https://source.unsplash.com/1920x1080/?\" + topic\nvar msg1 = {\n    chatId: msg.payload.chatId,\n    caption : caption,\n    url: url\n}\nreturn msg1",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 1180,
+        "wires": [
+            [
+                "f38f5e42f3e522fd",
+                "23dc236264d7a824"
+            ]
+        ]
+    },
+    {
+        "id": "f38f5e42f3e522fd",
+        "type": "http request",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "method": "GET",
+        "ret": "bin",
+        "paytoqs": "body",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "credentials": {
+            "user": "",
+            "password": ""
+        },
+        "x": 490,
+        "y": 1180,
+        "wires": [
+            [
+                "0971d32b9238c3c5"
+            ]
+        ]
+    },
+    {
+        "id": "0971d32b9238c3c5",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "func": "var payload = {\n    chatId: msg.chatId,\n    type: \"photo\",\n    content: msg.payload,\n    caption: msg.caption\n}\nvar msg1 = {payload: payload}\nreturn msg1\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 1240,
+        "wires": [
+            [
+                "d63f79d13ef8a33d"
+            ]
+        ]
+    },
+    {
+        "id": "d63f79d13ef8a33d",
+        "type": "telegram sender",
+        "z": "bfc6ed84821284e8",
+        "name": "Telegram sender",
+        "bot": "",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 890,
+        "y": 1240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "def25b41cb8c87d7",
+        "type": "function",
+        "z": "bfc6ed84821284e8",
+        "name": "messageGenerator",
+        "func": "msg.command = '';\nmsg.id = msg.payload.chatId;\nmsg.help = false;\nmsg.iconhi;\nlet input = msg.payload.content.split(' ');\nmsg.command = input[0];\nif (msg.command === '/help' || msg.command === '/start') {\n    msg.help = true;\n    return msg;\n}\nmsg.payload = {};\n\ncontent = `Hi, I'm NotaBot!'`;\nmsg.payload.chatId = msg.id;\nmsg.payload.type = 'message';\nmsg.payload.content = content;\nmsg.payload.options = { \n        parse_mode: \"Markdown\"\n    }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 140,
+        "wires": [
+            [
+                "199b5545621893a4",
+                "f7a7fb1cea4cd137"
+            ]
+        ]
+    },
+    {
+        "id": "199b5545621893a4",
+        "type": "telegram sender",
+        "z": "bfc6ed84821284e8",
+        "name": "Telegram sender",
+        "bot": "",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 590,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fe0aaf535c95e5b7",
+        "type": "comment",
+        "z": "bfc6ed84821284e8",
+        "name": "Image",
+        "info": "",
+        "x": 70,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "c5dcf5f77838d9ec",
+        "type": "comment",
+        "z": "bfc6ed84821284e8",
+        "name": "List of all commands",
+        "info": "",
+        "x": 110,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "f80b1473a81cadd4",
+        "type": "telegram command",
+        "z": "bfc6ed84821284e8",
+        "name": "help",
+        "command": "/help",
+        "description": "",
+        "registercommand": false,
+        "language": "",
+        "bot": "",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 70,
+        "y": 60,
+        "wires": [
+            [
+                "def25b41cb8c87d7"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f7a7fb1cea4cd137",
+        "type": "debug",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "f3918a2995122782",
+        "type": "debug",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "42ebfbc276dcce4f",
+        "type": "debug",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "23dc236264d7a824",
+        "type": "debug",
+        "z": "bfc6ed84821284e8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 1100,
+        "wires": []
+    }
+]
